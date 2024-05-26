@@ -49,18 +49,16 @@ jobs:
               uses: jfrog/setup-jfrog-cli@v4
               env:
                 # JFrog platform url (for example: https://acme.jfrog.io)
-                JF_URL: ${{ secrets.JFROG_URL }}           
+                JF_URL: ${{ secrets.JF_URL }}           
                 # Basic authentication credentials
-                JF_USER: ${{ secrets.JFROG_USER }}
-                JF_PASSWORD: ${{ secrets.JFROG_PASSWORD }}
+                JF_USER: ${{ secrets.JF_USER }}
+                JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
 
             # Configure JFrog server and print the version
             - name: Config JFrog Server
-              run: |  
-                jf c add jfrog --url ${{ secrets.JFROG_URL }}  --user ${{ secrets.JFROG_URL }}  --password ${{ secrets.JFROG_PASSWORD }}               
+              run: |               
                 jf mvn-config --repo-deploy-releases mule-release-local \
-                              --repo-deploy-snapshots mule-local \
-                              --server-id-deploy jfrog
+                              --repo-deploy-snapshots mule-local
             # Set build variables                 
             - name: Set build variables
               run: |
