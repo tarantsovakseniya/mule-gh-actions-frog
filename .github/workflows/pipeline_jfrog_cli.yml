@@ -1,0 +1,112 @@
+#Optional - The name of the workflow as it will appear in the "Actions" tab of the GitHub repository. 
+name: mulesoft-jfrog-cli-pipeline
+
+#Optional - The name for workflow runs generated from the workflow.
+run-name: run by ${{ github.actor }}
+
+#Specifies the trigger for this workflow.
+on: 
+  workflow_dispatch:
+    inputs:
+        release:
+            description: Release
+            required: true
+            default: 'false'
+
+jobs:
+    #Custom name of the job.
+    build:
+        env: 
+          CLOUDHUB_ENVIRONMENT: "Sandbox" 
+          CLOUDHUB_WORKERS: "1"
+          CLOUDHUB_WORKER_TYPE: "MICRO"
+          CLOUDHUB_REGION: "us-east-2"
+          CLOUDHUB_ID: ${{ secrets.CLOUDHUB_ID }}
+          CLOUDHUB_SECRET: ${{ secrets.CLOUDHUB_SECRET }}
+        permissions:
+          packages: write
+          contents: write
+        #Runner
+        runs-on: ubuntu-latest
+        steps:
+            # This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+            - name: Get the code
+              uses: actions/checkout@v4    
+
+            # Setup Java
+            - name: Setup JDK 8
+              uses: actions/setup-java@v4
+              with:
+                distribution: 'adopt-hotspot'
+                java-version: '8'
+                #Cache dependencies to speed up workflow runs.
+                cache: maven
+                #Value of the distributionManagement/repository/id field of the pom.xml
+                server-id: github
+
+            # Setup JFrog CLI
+            - name: Setup JFrog CLI
+              uses: jfrog/setup-jfrog-cli@v4
+              env:
+                # JFrog platform url (for example: https://acme.jfrog.io)
+                JF_URL: ${{ secrets.JFROG_URL }}           
+                # Basic authentication credentials
+                JF_USER: ${{ secrets.JFROG_USER }}
+                JF_PASSWORD: ${{ secrets.JFROG_PASSWORD }}
+
+            # Configure JFrog server and print the version
+            - name: Config JFrog Server
+              run: |  
+                jf -v
+                jf mvn-config --repo-deploy-releases mule-release-local \
+                              --repo-deploy-snapshots mule-local 
+            # Set build variables                 
+            - name: Set build variables
+              run: |
+                echo "BUILD_NAME=$(echo ${GITHUB_REPOSITORY#*/})" >> "$GITHUB_ENV"  
+                echo "BUILD_NUMBER=$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+
+            # Run the tests
+            - name: Test the compiled source code
+              run: mvn clean test
+
+            # Package
+            - name: Build the jar
+              run: mvn package -DskipTests   
+
+            # # Configure user for the next step
+            - name: Configure Git user
+              run: |
+                git config user.email "actions@github.com"
+                git config user.name "GitHub Actions"
+
+            # Replace the snapshot version with a release candidate version.
+            # Deploy the jar to GitHub registry
+            # Build next snapshot version.
+            - name: Prepare and perform release            
+              if: github.event.inputs.release == 'true'
+              run: mvn -B release:prepare release:perform
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            # Collect build info
+            - name: Collect build info
+              run: |
+                jf rt bag ${{ env.BUILD_NAME }} ${{ env.BUILD_NUMBER }} .
+
+            # Deploy to CloudHub
+            - name: Deploy             
+              continue-on-error: true
+              run: |
+                mvn -U -V -e -B -DskipTests deploy --file pom.xml -DmuleDeploy \
+                -Dconn.app.client.id=${{ env.CLOUDHUB_ID}} \
+                -Dconn.app.client.secret=${{ env.CLOUDHUB_SECRET}} \
+                -Dcloudhub.environment=${{ env.CLOUDHUB_ENVIRONMENT}} \
+                -Dcloudhub.workerType=${{ env.CLOUDHUB_WORKER_TYPE}} \
+                -Dcloudhub.workers=${{ env.CLOUDHUB_WORKERS}} \
+                -Dcloudhub.region=${{ env.CLOUDHUB_REGION}} \
+
+            # Upload artifact
+            - name: Upload artifact to JFrog repository
+              run: |
+                jf mvn clean install -DskipTests
