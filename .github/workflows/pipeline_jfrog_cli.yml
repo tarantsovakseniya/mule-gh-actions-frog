@@ -59,7 +59,8 @@ jobs:
               run: |  
                 jf c add jfrog 
                 jf mvn-config --repo-deploy-releases mule-release-local \
-                              --repo-deploy-snapshots mule-local 
+                              --repo-deploy-snapshots mule-local \
+                              --server-id-deploy jfrog
             # Set build variables                 
             - name: Set build variables
               run: |
