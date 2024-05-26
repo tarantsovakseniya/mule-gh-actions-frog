@@ -13,9 +13,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<app.runtime>4.5</app.runtime>
+		<app.runtime>4.6</app.runtime>
 		<mule.maven.plugin.version>4.0.0</mule.maven.plugin.version>
-		<mule.version>4.5</mule.version>
 		<tags />
 		<categories>[]</categories>
 		<maven.release.plugin.version>3.0.4</maven.release.plugin.version>
@@ -43,7 +42,7 @@
 				<configuration>
 					<cloudHubDeployment>
 						<uri>https://anypoint.mulesoft.com</uri>
-						<muleVersion>${mule.version}</muleVersion>
+						<muleVersion>${app.runtime}</muleVersion>
 						<connectedAppClientId>${conn.app.client.id}</connectedAppClientId>
 						<connectedAppClientSecret>${conn.app.client.secret}</connectedAppClientSecret>
 						<connectedAppGrantType>client_credentials</connectedAppGrantType>
