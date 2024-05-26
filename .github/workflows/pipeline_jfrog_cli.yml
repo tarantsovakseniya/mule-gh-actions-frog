@@ -57,7 +57,7 @@ jobs:
             # Configure JFrog server and print the version
             - name: Config JFrog Server
               run: |  
-                jf -v
+                jf c add jfrog 
                 jf mvn-config --repo-deploy-releases mule-release-local \
                               --repo-deploy-snapshots mule-local 
             # Set build variables                 
