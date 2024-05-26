@@ -57,7 +57,7 @@ jobs:
             # Configure JFrog server and print the version
             - name: Config JFrog Server
               run: |  
-                jf c add jfrog 
+                jf c add jfrog --url ${{ secrets.JFROG_URL }}  --user ${{ secrets.JFROG_URL }}  --password ${{ secrets.JFROG_PASSWORD }}               
                 jf mvn-config --repo-deploy-releases mule-release-local \
                               --repo-deploy-snapshots mule-local \
                               --server-id-deploy jfrog
@@ -110,4 +110,4 @@ jobs:
             # Upload artifact
             - name: Upload artifact to JFrog repository
               run: |
-                jf mvn clean install -DskipTests
+                jf mvn clean install -DskipTests --build-name=${{ env.BUILD_NAME}} --build-number=${{ env.BUILD_NUMBER }}
