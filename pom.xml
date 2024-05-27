@@ -27,6 +27,42 @@
     	<tag>HEAD</tag>
     </scm>	
 
+	<profiles>
+		<profile>
+			<id>artifactory</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jfrog.buildinfo</groupId>
+						<artifactId>artifactory-maven-plugin</artifactId>
+						<version>3.6.2</version>
+						<executions>
+							<execution>
+								<id>build-info</id>
+								<goals>	
+									<goal>publish</goal>
+								</goals>
+								<configuration>
+									<buildInfo>
+										<buildName>${jf.build.name}</buildName>
+										<buildNumber>${jf.build.number}</buildNumber>
+									</buildInfo>
+									<publisher>
+										<contextUrl>${jf.url}</contextUrl>
+										<username>${jf.user}</username>
+										<password>${jf.password}</password>
+										<repoKey>${jf.repo.release}</repoKey>
+										<snapshotRepoKey>${jf.repo.snapshot}</snapshotRepoKey>
+									</publisher>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>						
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -61,32 +97,6 @@
 					</cloudHubDeployment>
 					<classifier>mule-application</classifier>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.jfrog.buildinfo</groupId>
-				<artifactId>artifactory-maven-plugin</artifactId>
-				<version>3.6.2</version>
-				<executions>
-					<execution>
-						<id>build-info</id>
-						<goals>	
-							<goal>publish</goal>
-						</goals>
-						<configuration>
-							<buildInfo>
-								<buildName>${jf.build.name}</buildName>
-								<buildNumber>${jf.build.number}</buildNumber>
-							</buildInfo>
-							<publisher>
-								<contextUrl>${jf.url}</contextUrl>
-								<username>${jf.user}</username>
-								<password>${jf.password}</password>
-								<repoKey>${jf.repo.release}</repoKey>
-								<snapshotRepoKey>${jf.repo.snapshot}</snapshotRepoKey>
-							</publisher>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
