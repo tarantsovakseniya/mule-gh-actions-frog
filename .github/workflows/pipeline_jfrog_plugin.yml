@@ -85,7 +85,7 @@ jobs:
                 JF_REPO_RELEASE: 'mule-libs-release-local'
                 JF_REPO_SNAPSHOT: 'mule-libs-snapshot-local'
               run: |
-                mvn deploy -DskipTests \
+                mvn deploy -DskipTests -P=artifactory \
                 -Djf.build.name-=${{ env.BUILD_NAME}} \
                 -Djf.build.number=${{ env.BUILD_NUMBER }} \
                 -Djf.url=${{ secrets.JF_URL }} \
