@@ -51,15 +51,14 @@ jobs:
                 # JFrog platform url (for example: https://acme.jfrog.io)
                 JF_URL: ${{ secrets.JF_URL }}           
                 # Basic authentication credentials
-                # JF_USER: ${{ secrets.JF_USER }}
-                # JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
-                JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }} 
+                JF_USER: ${{ secrets.JF_USER }}
+                JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
 
             # Configure JFrog server and print the version
             - name: Config JFrog Server
               run: |               
-                jf mvn-config --repo-deploy-releases mule-release-local \
-                              --repo-deploy-snapshots mule-local
+                jf mvn-config --repo-deploy-releases mule-libs-release-local \
+                              --repo-deploy-snapshots mule-libs-snapshot-local
             # Set build variables                 
             - name: Set build variables
               run: |
