@@ -67,7 +67,7 @@
 				<artifactId>artifactory-maven-plugin</artifactId>
 				<version>3.6.2</version>
 				<executions>
-					</execution>
+					<execution>
 						<id>build-info</id>
 						<goals>	
 							<goal>publish</goal>
