@@ -79,6 +79,12 @@ jobs:
                 -Dcloudhub.workers=${{ env.CLOUDHUB_WORKERS}} \
                 -Dcloudhub.region=${{ env.CLOUDHUB_REGION}} \
 
+
+            - name: Set build variables
+              run: |
+                echo "BUILD_NAME=$(echo ${GITHUB_REPOSITORY#*/})" >> "$GITHUB_ENV"  
+                echo "BUILD_NUMBER=$GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+
             # Upload artifact
             - name: Upload artifact to JFrog repository
               env: 
@@ -86,10 +92,10 @@ jobs:
                 JF_REPO_SNAPSHOT: 'mule-libs-snapshot-local'
               run: |
                 mvn deploy -DskipTests \
-                -Djf.build.name-=${{ env.BUILD_NAME}} \
+                -Djf.build.name=${{ env.BUILD_NAME }} \
                 -Djf.build.number=${{ env.BUILD_NUMBER }} \
                 -Djf.url=${{ secrets.JF_URL }} \
+                -Djf.pass=${{ secrets.JF_PASSWORD }} \
                 -Djf.user=${{ secrets.JF_USER }} \
-                -Djf.password=${{ secrets.JF_PASSWORD }} \
                 -Djf.repo.release=${{ env.JF_REPO_RELEASE }} \
                 -Djf.repo.snapshot=${{ env.JF_REPO_SNAPSHOT }}
