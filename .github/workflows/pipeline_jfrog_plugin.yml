@@ -1,5 +1,5 @@
 #Optional - The name of the workflow as it will appear in the "Actions" tab of the GitHub repository. 
-name: mulesoft-jfrog-cli-pipeline
+name: mulesoft-jfrog-plugin-pipeline
 
 #Optional - The name for workflow runs generated from the workflow.
 run-name: run by ${{ github.actor }}
