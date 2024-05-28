@@ -36,6 +36,19 @@ jobs:
                 #Cache dependencies to speed up workflow runs.
                 cache: maven
 
+            - uses: s4u/maven-settings-action@v3.0.0
+              with:
+                servers: |
+                  [{
+                      "id": "central",
+                      "username": "${{ secrets.JF_USER }}",
+                      "password": "${{ secrets.JF_PASSWORD }}"
+                  },
+                  {
+                    "id": "snapshots",
+                    "username": "${{ secrets.JF_USER }}",
+                    "password": "${{ secrets.JF_PASSWORD }}"                    
+                  }]
             # Run the tests
             - name: Test the compiled source code
               run: mvn clean test
@@ -55,7 +68,6 @@ jobs:
                 -Dcloudhub.workerType=${{ env.CLOUDHUB_WORKER_TYPE}} \
                 -Dcloudhub.workers=${{ env.CLOUDHUB_WORKERS}} \
                 -Dcloudhub.region=${{ env.CLOUDHUB_REGION}} \
-
 
             # Upload artifact
             - name: Upload artifact to JFrog repository
